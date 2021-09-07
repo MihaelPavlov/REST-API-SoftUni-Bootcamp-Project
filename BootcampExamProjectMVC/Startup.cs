@@ -1,4 +1,5 @@
 using BootcampExamProjectMVC.Services.CandidatesServices;
+using BootcampExamProjectMVC.Services.JobsServices;
 using BootcampExamProjectMVC.Services.RecruitersServices;
 using BootcampExamProjectMVC.Services.SkillsServices;
 using Microsoft.AspNetCore.Builder;
@@ -35,6 +36,7 @@ namespace BootcampExamProjectMVC
             services.AddScoped<ICandidatesService, CandidatesService>();
             services.AddScoped<ISkillsService, SkillsService>();
             services.AddScoped<IRecruitersService, RecruitersService>();
+            services.AddScoped<IJobsService, JobsService>();
 
         }
 

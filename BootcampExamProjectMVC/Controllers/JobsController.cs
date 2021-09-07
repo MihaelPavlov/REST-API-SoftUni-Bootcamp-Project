@@ -1,77 +1,58 @@
-﻿using BootcampExamProjectMVC.InputModels;
-using BootcampExamProjectMVC.Models;
-using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-
-namespace BootcampExamProjectMVC.Controllers
+﻿namespace BootcampExamProjectMVC.Controllers
 {
+    using System;
+    using System.Collections.Generic;
+    using System.Linq;
+    using System.Threading.Tasks;
+
+    using BootcampExamProjectMVC.InputModels;
+    using BootcampExamProjectMVC.Models;
+    using BootcampExamProjectMVC.Services.JobsServices;
+    using Microsoft.AspNetCore.Mvc;
+
     [ApiController]
     [Route("[controller]")]
     public class JobsController : ControllerBase
     {
-        private readonly ApplicationDbContext db;
+        private readonly IJobsService jobsService;
 
-        // TODO: Move all Logic to Services
-        public JobsController(ApplicationDbContext db)
+        public JobsController(IJobsService jobsService)
         {
-            this.db = db;
+            this.jobsService = jobsService;
+        }
+
+        [HttpGet("{id}")]
+        public Job Get(string id)
+        {
+            var job = this.jobsService.GetJobById(id);
+            return job;
+        }
+
+        [Route("/Jobs/All")]
+        [HttpGet]
+        public ActionResult<IEnumerable<Job>>  All(string name)
+        {
+            var jobs = this.jobsService.GetAllJobsWithThatSkillName(name).ToList();
+            return jobs;
         }
 
         [HttpPost]
         public Job Post(InputModelJob input)
         {
-            var job = new Job
-            {
-                Description = input.Description,
-                Title = input.Title,
-                Salary = input.Salary
-            };
-
-            var newSkills = new List<Skill>(input.JobSkills.Count);
-
-            var jobSkills = new List<JobSkill>(input.JobSkills.Count);
-
-            var skillInDatabase = this.db.Skills.ToList();
-
-            foreach (var skill in input.JobSkills)
-            {
-                if (!skillInDatabase.Any(x => x.Name == skill.Name))
-                {
-                    newSkills.Add(new Skill { Name = skill.Name });
-                }
-            }
-
-            this.db.Skills.AddRange(newSkills);
-            this.db.SaveChanges();
-
-            foreach (var skill in input.JobSkills)
-            {
-                var skillFromTheDB = this.db.Skills.FirstOrDefault(x => x.Name == skill.Name);
-                jobSkills.Add(new JobSkill { JobId = job.Id, SkillId = skillFromTheDB.Id });
-            }
-
-
-            job.JobSkills = jobSkills;
-            this.db.JobSkills.AddRange(jobSkills);
-            this.db.Jobs.Add(job);
-            this.db.SaveChanges();
-            return job;
+            var newJob = this.jobsService.CreateJob(input);
+            return newJob;
         }
 
         [HttpDelete("{id}")]
         public string Delete(string id)
         {
-            var jobToDelete = this.db.Jobs.FirstOrDefault(x => x.Id == id);
-            var removeJobSkill = this.db.JobSkills.Where(x => x.JobId == jobToDelete.Id).ToList();
+            var isJobDeleted = this.jobsService.DeleteJobById(id);
+            if (!isJobDeleted)
+            {
+                return $"We don't have job with this ID {id} ";
+            }
 
-            this.db.JobSkills.RemoveRange(removeJobSkill);
-            this.db.Jobs.Remove(jobToDelete);
-            this.db.SaveChanges();
-            return this.Ok().ToString();
-
+            return "Job Successfully Deleted!";
         }
     }
 }

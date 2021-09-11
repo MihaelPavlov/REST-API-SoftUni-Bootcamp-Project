@@ -29,7 +29,7 @@
             return recruiter;
         }
 
-        private void CreateNewSkills(ICollection<InputModelSkill> inputSkills)
+        public void CreateNewSkills(ICollection<InputModelSkill> inputSkills)
         {
             var newSkills = new List<Skill>(inputSkills.Count);
 
@@ -37,7 +37,7 @@
 
             foreach (var skill in inputSkills)
             {
-                if (!skillInDatabase.Any(x => x.Name == skill.Name))
+                if (skillInDatabase.Any(x => x.Name == skill.Name))
                 {
                     newSkills.Add(new Skill { Name = skill.Name });
                 }
@@ -97,12 +97,12 @@
 
             //Done: Logic to add newSkills and candidateSkills
             this.CreateNewSkills(input.Skills);
-            newCandidate.CandidateSkills = this.CreateCandidateSkills(newCandidate.Id, input.Skills).ToList();
 
 
             this.db.Candidates.Add(newCandidate);
 
             this.db.SaveChanges();
+            newCandidate.CandidateSkills = this.CreateCandidateSkills(newCandidate.Id, input.Skills).ToList();
             return newCandidate;
         }
 

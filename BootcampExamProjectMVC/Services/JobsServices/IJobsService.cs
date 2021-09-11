@@ -17,5 +17,9 @@
         Job CreateJob(InputModelJob input);
 
         bool DeleteJobById(string id);
+
+        void CreateAvailableInterviews(Dictionary<string, string> suitableCandidates);
+
+        Dictionary<string, string> CheckIfWeHaveSuitableCandidatesForJobs();
     }
 }

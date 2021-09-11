@@ -16,6 +16,87 @@
             this.db = db;
         }
 
+        public Dictionary<string, string> CheckIfWeHaveSuitableCandidatesForJobs()
+        {
+            var skills = this.db.Skills.ToList();
+
+            var jobs = this.db.Jobs.ToList();
+            var jobSkills = this.db.JobSkills.ToList();
+
+            var candidates = this.db.Candidates.ToList();
+            var candidateSkills = this.db.CandidateSkills.ToList();
+
+            var interviews = this.db.Interviews.ToList();
+            //candidateId and jobId
+            var suitableCandidates = new Dictionary<string, string>();
+
+            foreach (var jobSkill in jobSkills)
+            {
+                foreach (var candidateSkill in candidateSkills)
+                {
+                    if (jobSkill.SkillId == candidateSkill.SkillId)
+                    {
+                        var candidate = candidates.FirstOrDefault(x => x.Id == candidateSkill.CandidateId);
+                        if (!suitableCandidates.ContainsKey(candidate.Id))
+                        {
+                            suitableCandidates.Add(candidate.Id, jobSkill.JobId);
+                        }
+                        //TODO: If candidate have already one job .To can get more jobs
+                        if (interviews.Any(x=>x.CandidateId == candidate.Id && x.JobId == jobSkill.JobId))
+                        {
+                            suitableCandidates.Remove(candidate.Id);
+                        }
+
+                    }
+                }
+            }
+
+
+            return suitableCandidates;
+        }
+
+        public bool CheckRecruiterInterviewsSlotsById(string recruiterId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CreateAvailableInterviews(Dictionary<string, string> suitableCandidates)
+        {
+            //clean the candidates that alreadyhave this interview;
+            var interviewFromDb = this.db.Interviews.ToList();
+            foreach (var intr in interviewFromDb)
+            {
+                if (suitableCandidates.ContainsKey(intr.CandidateId))
+                {
+                    suitableCandidates.Remove(intr.CandidateId);
+                }
+            }
+
+            var newInterviews = new List<Interview>();
+            foreach (var pair in suitableCandidates)
+            {
+                var candidate = this.db.Candidates.FirstOrDefault(x => x.Id == pair.Key);
+                var job = this.db.Jobs.FirstOrDefault(x => x.Id == pair.Value);
+
+                var interview = new Interview
+                {
+                    Candidate = candidate,
+                    CandidateId = candidate.Id,
+                    Job = job,
+                    JobId = job.Id,
+                };
+
+                var recruiter = this.db.Recruiters.First(x => x.Id == candidate.RecruiterId);
+                if (recruiter.Interviews.Count() < 5)
+                {
+                    recruiter.Interviews.Add(interview);
+                    newInterviews.Add(interview);
+                }
+            }
+            this.db.Interviews.AddRange(newInterviews);
+            this.db.SaveChanges();
+        }
+
         public Job CreateJob(InputModelJob input)
         {
             var job = new Job

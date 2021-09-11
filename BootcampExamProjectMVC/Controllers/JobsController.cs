@@ -30,9 +30,17 @@
 
         [Route("/Jobs/All")]
         [HttpGet]
-        public ActionResult<IEnumerable<Job>>  All(string name)
+        public ActionResult<IEnumerable<Job>> All(string name)
         {
             var jobs = this.jobsService.GetAllJobsWithThatSkillName(name).ToList();
+            return jobs;
+        }
+
+        [Route("/Jobs/Try")]
+        [HttpGet]
+        public ActionResult<Dictionary<string,string>> Try()
+        {
+            var jobs = this.jobsService.CheckIfWeHaveSuitableCandidatesForJobs();
             return jobs;
         }
 
@@ -40,6 +48,8 @@
         public Job Post(InputModelJob input)
         {
             var newJob = this.jobsService.CreateJob(input);
+            var availableInterviews = this.jobsService.CheckIfWeHaveSuitableCandidatesForJobs();
+            this.jobsService.CreateAvailableInterviews(availableInterviews);
             return newJob;
         }
 

@@ -16,7 +16,7 @@
             this.db = db;
         }
 
-        public Dictionary<string, string> CheckIfWeHaveSuitableCandidatesForJobs()
+        public List<KeyValuePair<string, string>> CheckIfWeHaveSuitableCandidatesForJobs()
         {
             var skills = this.db.Skills.ToList();
 
@@ -28,28 +28,45 @@
 
             var interviews = this.db.Interviews.ToList();
             //candidateId and jobId
-            var suitableCandidates = new Dictionary<string, string>();
+            var suitableCandidates = new List<KeyValuePair<string, string>>();
 
-            foreach (var jobSkill in jobSkills)
+            foreach (var candidate in candidates)
             {
-                foreach (var candidateSkill in candidateSkills)
+                foreach (var job in jobs)
                 {
-                    if (jobSkill.SkillId == candidateSkill.SkillId)
+                    var test = job.JobSkills.FirstOrDefault(j => j.SkillId == candidate.Id);
+                    foreach (var jobSkill in job.JobSkills)
                     {
-                        var candidate = candidates.FirstOrDefault(x => x.Id == candidateSkill.CandidateId);
-                        if (!suitableCandidates.ContainsKey(candidate.Id))
+                        var isCandidateApprove = candidate.CandidateSkills.Any(x => x.Skill.Id == jobSkill.SkillId );
+                        if (isCandidateApprove)
                         {
-                            suitableCandidates.Add(candidate.Id, jobSkill.JobId);
+                            suitableCandidates.Add(new KeyValuePair<string, string>(candidate.Id, job.Id));
+                            break;
                         }
-                        //TODO: If candidate have already one job .To can get more jobs
-                        if (interviews.Any(x=>x.CandidateId == candidate.Id && x.JobId == jobSkill.JobId))
-                        {
-                            suitableCandidates.Remove(candidate.Id);
-                        }
-
                     }
                 }
             }
+
+            //foreach (var jobSkill in jobSkills)
+            //{
+            //    foreach (var candidateSkill in candidateSkills)
+            //    {
+            //        if (jobSkill.SkillId == candidateSkill.SkillId)
+            //        {
+            //            var candidate = candidates.FirstOrDefault(x => x.Id == candidateSkill.CandidateId);
+            //            if (!suitableCandidates.ContainsKey(candidate.Id))
+            //            {
+            //                suitableCandidates.Add(candidate.Id, jobSkill.JobId);
+            //            }
+            //            //TODO: If candidate have already one job .To can get more jobs
+            //            if (interviews.Any(x=>x.CandidateId == candidate.Id && x.JobId == jobSkill.JobId))
+            //            {
+            //                suitableCandidates.Remove(candidate.Id);
+            //            }
+
+            //        }
+            //    }
+            //}
 
 
             return suitableCandidates;

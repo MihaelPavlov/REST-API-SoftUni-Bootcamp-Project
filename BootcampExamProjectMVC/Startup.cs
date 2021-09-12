@@ -1,4 +1,5 @@
 using BootcampExamProjectMVC.Services.CandidatesServices;
+using BootcampExamProjectMVC.Services.InterviewsServices;
 using BootcampExamProjectMVC.Services.JobsServices;
 using BootcampExamProjectMVC.Services.RecruitersServices;
 using BootcampExamProjectMVC.Services.SkillsServices;
@@ -37,6 +38,7 @@ namespace BootcampExamProjectMVC
             services.AddScoped<ISkillsService, SkillsService>();
             services.AddScoped<IRecruitersService, RecruitersService>();
             services.AddScoped<IJobsService, JobsService>();
+            services.AddScoped<IInterviewsService, InterviewsService>();
 
         }
 

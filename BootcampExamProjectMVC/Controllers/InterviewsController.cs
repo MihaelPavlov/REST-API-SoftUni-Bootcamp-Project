@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using BootcampExamProjectMVC.Services.InterviewsServices;
+using BootcampExamProjectMVC.Services.JobsServices;
+using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,19 +12,22 @@ namespace BootcampExamProjectMVC.Controllers
     [Route("[controller]")]
     public class InterviewsController : Controller
     {
-        private readonly ApplicationDbContext db;
+        private readonly IInterviewsService interviewsService;
+        private readonly IJobsService jobsService;
+
 
         // TODO: Move all Logic to Services
-        public InterviewsController(ApplicationDbContext db)
+        public InterviewsController(IInterviewsService interviewsService, IJobsService jobsService)
         {
-            this.db = db;
+            this.interviewsService = interviewsService;
+            this.jobsService = jobsService;
         }
 
         [HttpGet]
-        public string Get()
+        public List<KeyValuePair<string, string>> Get()
         {
-            //TODO: Implementation
-            return "";
+            var result = this.jobsService.CheckIfWeHaveSuitableCandidatesForJobs();
+            return result;
         }
     }
 }

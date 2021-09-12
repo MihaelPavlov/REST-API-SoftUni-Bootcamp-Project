@@ -20,6 +20,6 @@
 
         void CreateAvailableInterviews(Dictionary<string, string> suitableCandidates);
 
-        Dictionary<string, string> CheckIfWeHaveSuitableCandidatesForJobs();
+        List<KeyValuePair<string, string>> CheckIfWeHaveSuitableCandidatesForJobs();
     }
 }

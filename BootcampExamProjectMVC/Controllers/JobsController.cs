@@ -36,20 +36,20 @@
             return jobs;
         }
 
-        [Route("/Jobs/Try")]
-        [HttpGet]
-        public ActionResult<Dictionary<string,string>> Try()
-        {
-            var jobs = this.jobsService.CheckIfWeHaveSuitableCandidatesForJobs();
-            return jobs;
-        }
+        //[Route("/Jobs/Try")]
+        //[HttpGet]
+        //public ActionResult<Dictionary<string,string>> Try()
+        //{
+        //    var jobs = this.jobsService.CheckIfWeHaveSuitableCandidatesForJobs();
+        //    return jobs;
+        //}
 
         [HttpPost]
         public Job Post(InputModelJob input)
         {
             var newJob = this.jobsService.CreateJob(input);
             var availableInterviews = this.jobsService.CheckIfWeHaveSuitableCandidatesForJobs();
-            this.jobsService.CreateAvailableInterviews(availableInterviews);
+            //this.jobsService.CreateAvailableInterviews(availableInterviews);
             return newJob;
         }
 

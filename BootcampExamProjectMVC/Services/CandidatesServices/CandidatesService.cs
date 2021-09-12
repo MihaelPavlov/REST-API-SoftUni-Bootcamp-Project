@@ -37,7 +37,7 @@
 
             foreach (var skill in inputSkills)
             {
-                if (skillInDatabase.Any(x => x.Name == skill.Name))
+                if (!skillInDatabase.Any(x => x.Name == skill.Name))
                 {
                     newSkills.Add(new Skill { Name = skill.Name });
                 }
